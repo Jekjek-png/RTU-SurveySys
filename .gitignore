@@ -1,0 +1,28 @@
+# --- Virtual environments ---
+surveysys-env/
+venv/
+
+# --- Python cache & compiled files ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Environment variables (secrets) ---
+.env
+
+# --- Streamlit cache/config ---
+.streamlit/
+
+# --- Logs & temp files ---
+*.log
+*.pid
+
+# --- Docker artifacts ---
+# Ignore local build context files if any
+*.tmp
+*.swp
+
+# --- OS-specific junk ---
+.DS_Store
+Thumbs.db
