@@ -1,6 +1,8 @@
 # --- Virtual environments ---
 surveysys-env/
 venv/
+.env/
+
 
 # --- Python cache & compiled files ---
 __pycache__/
