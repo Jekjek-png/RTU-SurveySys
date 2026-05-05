@@ -2,6 +2,8 @@
 surveysys-env/
 venv/
 .env/
+frontend/
+docker/
 
 
 # --- Python cache & compiled files ---
