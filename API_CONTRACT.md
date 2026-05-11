@@ -70,9 +70,9 @@ pwede kayo mag base sa lesson na ginawa ni sir
 - **URL:** /responses?service=Accounting
 - **Description:** Returns all survey responses for a specific service. Used by the admin dashboard to display the comments tab.
 - **NOTE:** IBA IBA ITO PER SERVICE. Kung 
-/responses?service=Accounting is for accounting
-/responses?service=Clinic is for clinic
-/responses?service=Registrar is for registrar. but pareho lang sila ng response body magkakaiba lang name ng dept
+ - /responses?service=Accounting is for accounting
+ - /responses?service=Clinic is for clinic
+ - /responses?service=Registrar is for registrar. but pareho lang sila ng response body magkakaiba lang name ng dept
 
 - **Request body:** wala
 - **Response body:** (200 OK)
@@ -113,7 +113,7 @@ pwede kayo mag base sa lesson na ginawa ni sir
   "password": "password123"
 }
 ```
--**fields:** username and password yung required fields for admin login
+- **fields:** username and password yung required fields for admin login
 
 - **Response body:** (200 OK)
 ```json
@@ -133,10 +133,10 @@ pwede kayo mag base sa lesson na ginawa ni sir
 - **URL:** /admin/summary?service=Accounting
 - **Description:** Returns computed analytics for a service — average ratings, response count, and recent comments and suggestions. Used to populate the admin dashboard charts and metrics.
 
--**NOTE:** IBA IBA ITO PER SERVICE. Kung 
-/admin/summary?service=Accounting is for accounting
-/admin/summary?service=Clinic is for clinic
-/admin/summary?service=Registrar is for registrar. but pareho lang sila ng response body magkakaiba lang name ng dept
+- **NOTE:** IBA IBA ITO PER SERVICE. Kung 
+ - /admin/summary?service=Accounting is for accounting
+ - /admin/summary?service=Clinic is for clinic
+ - /admin/summary?service=Registrar is for registrar. but pareho lang sila ng response body magkakaiba lang name ng dept
 
 - **Query Parameter:**
   - **Parameter:** service
@@ -177,15 +177,15 @@ pwede kayo mag base sa lesson na ginawa ni sir
 
 ### 6. Get export as pdf
 - **Method:** GET
--**URL:** 
+- **URL:** 
     /admin/export/pdf?service=Accounting → PDF of Accounting responses
     /admin/export/pdf?service=Registrar → PDF of Registrar responses
     /admin/export/pdf?service=Clinic → PDF of Clinic responses
--**NOTE:** calls this when an admin clicks the Download PDF button. This endpoint does NOT return JSON. It returns a raw PDF file.
--**RESPONSE:**Response (200 OK):
+- **NOTE:** calls this when an admin clicks the Download PDF button. This endpoint does NOT return JSON. It returns a raw PDF file.
+- **RESPONSE:**Response (200 OK):
     Content-Type: application/pdf
     Content-Disposition: attachment; filename="Accounting_responses.pdf"
--**ADDITIONAL NOTE:** Ganto daw mukha pag sa streamlit 
+- **ADDITIONAL NOTE:** Ganto daw mukha pag sa streamlit 
  
  ```python 
 # example usage in 05_dashboard.py
@@ -200,7 +200,7 @@ st.download_button(
 )
 ``` 
 
--**ERROR RESPONSE** 
+- **ERROR RESPONSE** 
  - 404 Not FoundThe service name in the URL does not exist
  - 422 UnprocessableThe ?service= parameter was not included in the URL
  - 500 Server ErrorSomething went wrong while generating the PDF
