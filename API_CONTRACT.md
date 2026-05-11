@@ -172,6 +172,37 @@ pwede kayo mag base sa lesson na ginawa ni sir
   - 404 - Service name not found
   - 422 - service parameter missing from URL
 
+
+
+
+### 6. Get export as pdf
+- **Method:** GET
+-**URL:** 
+    /admin/export/pdf?service=Accounting → PDF of Accounting responses
+    /admin/export/pdf?service=Registrar → PDF of Registrar responses
+    /admin/export/pdf?service=Clinic → PDF of Clinic responses
+-**NOTE:** calls this when an admin clicks the Download PDF button. This endpoint does NOT return JSON. It returns a raw PDF file.
+-**RESPONSE:**Response (200 OK):
+    Content-Type: application/pdf
+    Content-Disposition: attachment; filename="Accounting_responses.pdf"
+-**ADDITIONAL NOTE:** Ganto daw mukha pag sa streamlit 
+
+# example usage in 05_dashboard.py
+service = st.session_state["service"]
+response = httpx.get(f"http://localhost:8000/admin/export/pdf?service={service}")
+
+st.download_button(
+    label="Download PDF Report",
+    data=response.content,       # raw PDF bytes, not JSON
+    file_name=f"{service}_responses.pdf",
+    mime="application/pdf"
+)
+
+-**ERROR RESPONSE** 
+ - 404 Not FoundThe service name in the URL does not exist
+ - 422 UnprocessableThe ?service= parameter was not included in the URL
+ - 500 Server ErrorSomething went wrong while generating the PDF
+
 ## Additional Notes
 - Ratings must always be integers between 1 and 5. FastAPI will reject anything outside this range with a 422 error.
 - Streamlit must never read or write CSV files directly. All data goes through the API.
