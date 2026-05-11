@@ -198,6 +198,7 @@ st.download_button(
     file_name=f"{service}_responses.pdf",
     mime="application/pdf"
 )
+``` 
 
 -**ERROR RESPONSE** 
  - 404 Not FoundThe service name in the URL does not exist
