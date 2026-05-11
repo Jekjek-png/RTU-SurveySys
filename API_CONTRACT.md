@@ -186,7 +186,8 @@ pwede kayo mag base sa lesson na ginawa ni sir
     Content-Type: application/pdf
     Content-Disposition: attachment; filename="Accounting_responses.pdf"
 -**ADDITIONAL NOTE:** Ganto daw mukha pag sa streamlit 
-
+ 
+ ```python 
 # example usage in 05_dashboard.py
 service = st.session_state["service"]
 response = httpx.get(f"http://localhost:8000/admin/export/pdf?service={service}")
