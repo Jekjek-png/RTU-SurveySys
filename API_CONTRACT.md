@@ -16,18 +16,16 @@ pwede kayo mag base sa lesson na ginawa ni sir
   "services": [
     {
       "service_id": "SVC001",
-      "service_name": "Accounting",
-      "description": "Handles tuition fees and payments"
+      "service_name": "Accounting"
     },
     {
       "service_id": "SVC002",
-      "service_name": "Registrar",
-      "description": "Enrollment, grades, and records"
+      "service_name": "Registrar"
+
     },
     {
       "service_id": "SVC003",
-      "service_name": "Clinic",
-      "description": "Medical and health assistance"
+      "service_name": "Clinic"
     }
   ]
 }
