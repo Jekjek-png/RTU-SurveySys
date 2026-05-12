@@ -16,6 +16,7 @@ pwede kayo mag base sa lesson na ginawa ni sir
   "services": [
     {
       "service_id": "SVC001",
+<<<<<<< HEAD
       "service_name": "Accounting"
     },
     {
@@ -26,6 +27,17 @@ pwede kayo mag base sa lesson na ginawa ni sir
     {
       "service_id": "SVC003",
       "service_name": "Clinic"
+=======
+      "service_name": "Accounting",
+    },
+    {
+      "service_id": "SVC002",
+      "service_name": "Registrar",
+    },
+    {
+      "service_id": "SVC003",
+      "service_name": "Clinic",
+>>>>>>> 4f09612 (update services desc)
     }
   ]
 }
