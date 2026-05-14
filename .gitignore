@@ -1,6 +1,7 @@
 # Virtual environment
 venv/
 surveysys/
+IntegProj/
 
 # Python cache
 __pycache__/
