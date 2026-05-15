@@ -40,13 +40,27 @@ pwede kayo mag base sa lesson na ginawa ni sir
 ```json
 {
   "service_id":        "SVC001",
-  "rating_staff":      4,
-  "rating_speed":      3,
-  "rating_accuracy":   5,
-  "rating_facilities": 4,
-  "rating_overall":    4,
-  "comment":    "TGIF.",
-  "suggestion": "Kick si elijah."
+  "Service_Availed":      "Regi form",
+  "Respondent_Name":      "Jake Icasiano",
+  "Date_of_Visit":        "15/01/2026",
+  "Age_Bracket":          "18-20",
+  "Gender":               "Male",
+  "Category_of_Respondent":"Student",
+  "CC1":                  "Box1",
+  "CC2":                  "Box1",
+  "CC3":                  "Box1",
+  "Service_satisfaction(1-5)":"4",
+  "Service_Time(1-5)":     "4" ,
+  "Service_Requirements(1-5)":"4",
+  "Service_Steps(1-5)":    "4",
+  "Service_Transaction(1-5)":"4", 
+  "Service_Fee(1-5 or N/A)":"4",
+  "Service_fair(1-5)":     "4",
+  "Service_Courtesy(1-5)": "4",
+  "Service_Request(1-5)":  "4",
+  "comments/suggestions": "Mainit sa office",
+  "Attending_Employee":   "Elijah",
+  "comments/suggestions_for_employee":"Masungit"
 }
 ```
 - **fields:** undefined pa
