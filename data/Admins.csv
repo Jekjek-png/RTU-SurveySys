@@ -1,4 +1,4 @@
-admin_id, username, password, assigned_service_id
+admin_id, username, password, service_id
 AD001, admin1, pass123, SV001
 AD002, admin2, pass456, SV002
 AD003, admin3, pass789, SV003
