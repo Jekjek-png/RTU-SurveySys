@@ -59,7 +59,6 @@ CSV_HEADERS = [
 @router.post("/Submit survey response", response_model=SurveyResponse)
 def post_response(response: SurveyResponse):
     try:
-        file_exists = DATA_FILE.exists()
 
         with DATA_FILE.open("a", newline="", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=CSV_HEADERS)
