@@ -122,6 +122,7 @@ pwede kayo mag base sa lesson na ginawa ni sir
 ```
 
 
+
 - **Error response:**
   - 404 - Service name not found
   - 422 - service parameter missing from URL
