@@ -6,7 +6,7 @@ router = APIRouter()
 
 DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "Services.csv"
     
-@router.get("/services")
+@router.get("/get available services")
 def get_services():
     if not DATA_FILE.exists():
         raise HTTPException(

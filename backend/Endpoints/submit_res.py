@@ -56,8 +56,8 @@ CSV_HEADERS = [
     "comments_suggestions_for_employee",
 ]
 
-@router.post("/upload", response_model=SurveyResponse)
-def upload_response(response: SurveyResponse):
+@router.post("/Submit survey response", response_model=SurveyResponse)
+def post_response(response: SurveyResponse):
     try:
         file_exists = DATA_FILE.exists()
 
