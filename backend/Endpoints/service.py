@@ -1,12 +1,12 @@
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import APIRouter, FastAPI, HTTPException
 import csv
 
-app = FastAPI()
+router = APIRouter()
 
 DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "Services.csv"
     
-@app.get("/services")
+@router.get("/services")
 def get_services():
     if not DATA_FILE.exists():
         raise HTTPException(
