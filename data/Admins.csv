@@ -1,4 +1,4 @@
-admin_id, username, pw_hash, service_id
-AD001, admin1, pass123, SV001
-AD002, admin2, pass456, SV002
-AD003, admin3, pass789, SV003
+username,salt,pwd_hash,service_id
+accAdmin,ee61711ce6b4a3a65081a87862731e8a,e8d27fe990625fc1f71adc560e7742d802ec981e2ee33ff6c525186b8b10025e,SV001
+registrarAdmin,0ee1f7edad6fb407594140a9d7d031ac,2b1c6200b587d7b3b3b2e78bd47bc4edb802b6e23e036c441a9f5e1a3a78e4bc,SV002
+clinicAdmin,49b54e2be3b609e02abc83ed7a6771ab,bb5a5223aae5ea697b715032f32a62441a59cda232ece02ea81ac9f2156c0fd8,SV003
