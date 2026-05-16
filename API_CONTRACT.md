@@ -7,7 +7,7 @@ pwede kayo mag base sa lesson na ginawa ni sir
 
 ### 1. SCHOOL SERVICES
 - **Method:** GET
-- **URL endpoint:** /services
+- **URL endpoint:** /get_available_services
 - **NOTE:** ito yung tatlong gagawan na services
 - **Request body:** wala
 - **Response body:** 200 OK
@@ -33,7 +33,7 @@ pwede kayo mag base sa lesson na ginawa ni sir
 
 ### 2. Submit Survey Response
 - **Method:** POST
-- **URL endpoint:** /response
+- **URL endpoint:** /Submit_survey_response
 - **NOTE:** hindi pa final need natin yung mismong survey form na paper
 
 - **Request body:**
@@ -69,7 +69,6 @@ pwede kayo mag base sa lesson na ginawa ni sir
 ```json
 {
   "message": "Survey submitted successfully.",
-  "submitted_at": "2025-05-11T14:32:00"
 }
 ```
 
