@@ -7,6 +7,9 @@ router = APIRouter()
 
 DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "Survey_response.csv"
 
+class SuccessResponse(BaseModel):
+    Message: str
+
 class SurveyResponse(BaseModel):
     service_id: str
     service_availed: str
@@ -33,7 +36,7 @@ class SurveyResponse(BaseModel):
 
 CSV_HEADERS = [
     "service_id",
-    "service_Availed",
+    "service_availed",
     "respondent_name",
     "date_of_visit",
     "age_bracket",
@@ -56,7 +59,7 @@ CSV_HEADERS = [
     "comments_suggestions_for_employee",
 ]
 
-@router.post("/Submit survey response", response_model=SurveyResponse)
+@router.post("/Submit_survey_response", response_model=SuccessResponse)
 def post_response(response: SurveyResponse):
     try:
 
@@ -65,7 +68,7 @@ def post_response(response: SurveyResponse):
 
             writer.writerow({
                 "service_id": response.service_id,
-                "service_Availed": response.service_availed,
+                "service_availed": response.service_availed,
                 "respondent_name": response.respondent_name,
                 "date_of_visit": response.date_of_visit,
                 "age_bracket": response.age_bracket,
@@ -88,6 +91,6 @@ def post_response(response: SurveyResponse):
                 "comments_suggestions_for_employee": response.comments_suggestions_for_employee,
             })
 
-        return response
+        return { "Message": "Survey submitted successfully."}
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Could not save survey response: {exc}")

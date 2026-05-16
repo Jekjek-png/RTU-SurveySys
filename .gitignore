@@ -2,6 +2,10 @@
 venv/
 surveysys/
 IntegProj/
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/backend/services
 
 # Python cache
 __pycache__/

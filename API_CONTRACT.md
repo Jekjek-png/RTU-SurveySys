@@ -7,7 +7,7 @@ pwede kayo mag base sa lesson na ginawa ni sir
 
 ### 1. SCHOOL SERVICES
 - **Method:** GET
-- **URL endpoint:** /services
+- **URL endpoint:** /get_available_services
 - **NOTE:** ito yung tatlong gagawan na services
 - **Request body:** wala
 - **Response body:** 200 OK
