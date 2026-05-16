@@ -10,15 +10,16 @@ ADMINS_FILE = DATA_DIR / "Admins.csv"
 # Premade Accounts
 accounts_to_create = [
     {"username": "accAdmin", "password": "accAdmin123!", "service_id": "SV001"},
-    {"username": "clinicAdmin", "password": "clinicAdmin456!", "service_id": "SV002"},
-    {"username": "registrarAdmin", "password": "registrarAdmin789!", "service_id": "SV003"}
+    {"username": "registrarAdmin", "password": "registrarAdmin456!", "service_id": "SV002"},
+    {"username": "clinicAdmin", "password": "clinicAdmin789!", "service_id": "SV003"}
 ]
 
 def _hash_password(password: str, salt: bytes) -> bytes:
     """The exact same hashing engine used in your main app."""
     return hashlib.pbkdf2_hmac('sha256', password.encode('utf-8'), salt, 100000)
-
+# Data folder confirmation and creation.
 def generate_real_csv():
+    
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     
     print(f"Generating mathematically correct hashes in {ADMINS_FILE}...")
