@@ -36,7 +36,7 @@ class SurveyResponse(BaseModel):
 
 CSV_HEADERS = [
     "service_id",
-    "service_Availed",
+    "service_availed",
     "respondent_name",
     "date_of_visit",
     "age_bracket",
@@ -68,7 +68,7 @@ def post_response(response: SurveyResponse):
 
             writer.writerow({
                 "service_id": response.service_id,
-                "service_Availed": response.service_availed,
+                "service_availed": response.service_availed,
                 "respondent_name": response.respondent_name,
                 "date_of_visit": response.date_of_visit,
                 "age_bracket": response.age_bracket,
