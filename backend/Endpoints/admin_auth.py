@@ -86,7 +86,6 @@ def verify_admin_access(credentials: LoginCredentials):
 
 # ENDPOINTS
 
-
 @router.post("/login")
 def login_admin(verified_user: dict = Depends(verify_admin_access)):
     # Authenticates an ADMIN and returns their assigned service details.
