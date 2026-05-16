@@ -14,48 +14,39 @@ def get_service_summary(
     verified_user: dict = Depends(verify_admin_access),
     preset_range: str = Query(None, description="Preset date range. Options: 'today', 'last_week', 'last_month', 'current_year', 'last_year'")
 ):
-    """
-    Summarizes survey responses exclusively for the service assigned to the logged-in admin.
-    """
+ 
+  #  Summarizes survey responses exclusively for the service assigned to the logged-in admin.
+
     if not DATA_FILE.exists():
         raise HTTPException(status_code=500, detail="Survey response data file not found.")
 
     service_id = verified_user.get("service_id")
     service_name = verified_user.get("service_name")
     
-    # ---------------------------------------------------------
     # DATE PRESET LOGIC
-    # ---------------------------------------------------------
+
     sd_obj = None
     ed_obj = None
     
-    # Dynamically pull the actual current date and time
     current_date = datetime.now()
     
     if preset_range:
         preset_range = preset_range.lower().strip()
-        if preset_range == "today":
-            # Last 24 hours
-            sd_obj = current_date - timedelta(days=1)
-            ed_obj = current_date
-        elif preset_range == "last_week":
-            # Last 7 days
-            sd_obj = current_date - timedelta(days=7)
-            ed_obj = current_date
-        elif preset_range == "last_month":
-            # Last 30 days
-            sd_obj = current_date - timedelta(days=30)
-            ed_obj = current_date
-        elif preset_range == "current_year":
-            # Jan 1st of current year to today
-            sd_obj = datetime(current_date.year, 1, 1)
-            ed_obj = current_date
-        elif preset_range == "last_year":
-            # Jan 1st to Dec 31st of previous year
-            sd_obj = datetime(current_date.year - 1, 1, 1)
-            ed_obj = datetime(current_date.year - 1, 12, 31)
+        
+        # Dictionary mapping.
+        preset_map = {
+            "today": (current_date - timedelta(days=1), current_date),
+            "last_week": (current_date - timedelta(days=7), current_date),
+            "last_month": (current_date - timedelta(days=30), current_date),
+            "current_year": (datetime(current_date.year, 1, 1), current_date),
+            "last_year": (datetime(current_date.year - 1, 1, 1), datetime(current_date.year - 1, 12, 31))
+        }
+        
+        # Instantly fetch the tuple and unpack it into our start and end date variables.
+        if preset_range in preset_map:
+            sd_obj, ed_obj = preset_map[preset_range]
         else:
-            raise HTTPException(status_code=400, detail="Invalid preset_range option.")
+            raise HTTPException(status_code=400, detail=f"Invalid preset_range option: '{preset_range}'")
 
     rating_fields = {
         "service_satisfaction": "service_satisfaction(1-5)",
@@ -69,7 +60,7 @@ def get_service_summary(
         "service_request": "service_request(1-5)"
     }
     
-    # Load data using Pandas (read all as string initially to prevent mixed-type warnings)
+    # Load data using Pandas
     try:
         df = pd.read_csv(DATA_FILE, dtype=str)
     except Exception:
@@ -78,7 +69,7 @@ def get_service_summary(
     # Clean headers: lowercase and strip whitespace
     df.columns = df.columns.str.strip().str.lower()
     
-    # Security & Performance: Filter strictly by the admin's assigned Service_ID.
+    # Security & Performance: Filter strictly by the admin's assigned Service_ID
     if 'service_id' in df.columns:
         df['service_id'] = df['service_id'].str.strip()
         df = df[df['service_id'] == service_id]
@@ -88,7 +79,6 @@ def get_service_summary(
     # Date filtering via vectorized boolean masking
     if not df.empty and (sd_obj or ed_obj):
         if 'date_of_visit' in df.columns:
-            # Parse the internal DD/MM/YYYY format 
             dates = pd.to_datetime(df['date_of_visit'].str.strip(), format="%d/%m/%Y", errors='coerce')
             
             mask = pd.Series(True, index=df.index)
@@ -104,16 +94,21 @@ def get_service_summary(
     # Initialize response structures
     averages = {}
     demographics = {"gender": {}, "age_bracket": {}, "category_of_respondent": {}}
-    cc_counts = {"cc1": {"yes": 0, "no": 0}, "cc2": {"yes": 0, "no": 0}, "cc3": {"yes": 0, "no": 0}}
+    
+    cc_counts = {
+        "cc1": {"Option A": 0, "Option B": 0, "Option C": 0, "Option D": 0}, 
+        "cc2": {"Option A": 0, "Option B": 0, "Option C": 0, "Option D": 0}, 
+        "cc3": {"Option A": 0, "Option B": 0, "Option C": 0, "Option D": 0}
+    }
+    
     comments_general = []
     comments_employee = []
     
     if total_responses > 0:
-        # Process ratings
+        # Process Ratings
         for metric, csv_key in rating_fields.items():
             if csv_key in df.columns:
                 s = df[csv_key].str.strip()
-                # Use regex to dynamically wipe out 'n/a' and empty values, then convert to numeric
                 s = s.replace(r'(?i)^n/a$', np.nan, regex=True).replace('', np.nan)
                 s = pd.to_numeric(s, errors='coerce')
                 
@@ -124,21 +119,24 @@ def get_service_summary(
             else:
                 averages[metric] = "N/A"
                 
-        # Process demographics using native pandas value_counts()
+        # Process Demographics.
         for demo_key in demographics.keys():
             if demo_key in df.columns:
                 s = df[demo_key].str.strip().replace('', 'Unknown').fillna('Unknown')
                 demographics[demo_key] = s.value_counts().to_dict()
                 
-        # Process Citizen Charter
+        # Process Citizen Charter.
         for cc in cc_counts.keys():
             if cc in df.columns:
-                s = df[cc].str.strip().str.lower()
+                s = df[cc].str.strip().str.title()
                 counts = s.value_counts().to_dict()
-                cc_counts[cc]["yes"] = counts.get("yes", 0)
-                cc_counts[cc]["no"] = counts.get("no", 0)
                 
-        # Process Feedback (filtering out NaNs and "n/a")
+                cc_counts[cc]["Option A"] = counts.get("Option A", 0)
+                cc_counts[cc]["Option B"] = counts.get("Option B", 0)
+                cc_counts[cc]["Option C"] = counts.get("Option C", 0)
+                cc_counts[cc]["Option D"] = counts.get("Option D", 0)
+                
+        # Process Feedback
         if "comments_suggestions" in df.columns:
             s = df["comments_suggestions"].str.strip()
             mask = (s != "") & (s.str.lower() != "n/a") & s.notna()
@@ -150,7 +148,6 @@ def get_service_summary(
             comments_employee = s[mask].tolist()
             
     else:
-        # Populate defaults if no data exists for the service/date range
         for metric in rating_fields:
             averages[metric] = "N/A"
 
