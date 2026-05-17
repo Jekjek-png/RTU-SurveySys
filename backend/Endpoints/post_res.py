@@ -1,11 +1,14 @@
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, AfterValidator, Field, field_validator
 import csv
+from datetime import datetime
 
 router = APIRouter()
 
 DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "Survey_response.csv"
+
+
 
 class SuccessResponse(BaseModel):
     Message: str
@@ -18,7 +21,7 @@ class SurveyResponse(BaseModel):
     age_bracket: str
     gender: str
     category_of_respondent: str
-    cc1: str
+    cc1: str 
     cc2: str
     cc3: str
     service_satisfaction: int
@@ -33,6 +36,126 @@ class SurveyResponse(BaseModel):
     comments_suggestions: str
     attending_employee: str
     comments_suggestions_for_employee: str
+
+    @field_validator("service_satisfaction", "service_time", "service_requirements", "service_steps", "service_transaction", "service_fair", "service_courtesy", "service_request")
+    def validate_rating(cls, value):
+        if not (1 <= value <= 5):
+            raise ValueError("Rating must be between 1 and 5.")
+        return value
+    
+    @field_validator("service_fee")
+    def validate_service_fee(cls, value):
+        if value != "N/A":
+            try:
+                fee_value = int(value)
+                if not (1 <= fee_value <= 5):
+                    raise ValueError("Service fee rating must be between 1 and 5 or 'N/A'.")
+            except ValueError:
+                raise ValueError("Service fee must be an integer between 1 and 5 or 'N/A'.")
+        return value
+    
+    @field_validator("service_id")
+    def validate_service_id(cls, value):
+        if value != "SV001" and value != "SV002" and value != "SV003":
+            raise ValueError("Service ID must be one of SV001, SV002, SV003.")
+        elif value.strip() == "":
+            raise ValueError("Service ID cannot be empty.")
+        return value
+    
+    @field_validator("respondent_name")
+    def validate_respondent_name(cls, value):
+        if len(value) > 60:
+            raise ValueError("Respondent name cannot exceed 60 characters.")
+        elif value.strip() == "":
+            raise ValueError("Respondent name cannot be empty.")
+        return value
+    
+    @field_validator("service_availed")
+    def validate_service_availed(cls, value):
+        if len(value) > 70:
+            raise ValueError("Service availed cannot exceed 70 characters")
+        elif value.strip() == "":
+            raise ValueError("Service availed cannot be empty.")
+        return value
+    
+    @field_validator("date_of_visit")
+    def validate_date_of_visit(cls, value):
+        try:
+            datetime.strptime(value, "%d/%m/%Y")
+        except ValueError:
+             raise ValueError("Date must be in DD/MM/YYYY format.")
+        return value
+    
+    @field_validator("age_bracket")
+    def validate_age_bracket(cls, value):
+        valid_age_bracket = ["16-Below", "16-20", "21-25", "26 and up"]
+        if value not in valid_age_bracket:
+            raise ValueError("Age bracket must be one of: '16-Below', '16-20', '21-25', '26 and up'.")
+        elif value.strip() == "":
+            raise ValueError("Age bracket must not be empty.")
+        return value
+    
+    @field_validator("gender")
+    def validate_gender(cls, value):
+        valid_gender = ["Male", "Female"]
+        if value not in valid_gender:
+            raise ValueError("Gender must be Male or Female only.")
+        elif value.strip() =="":
+            raise ValueError("Gender must not be empty.")
+        return value
+    
+    @field_validator("category_of_respondent")
+    def validate_category_of_respondent(cls, value):
+        valid_res_category = ["Student", "Alumni","Employee", "Visitor", "Parent/s", "Supplier", "LGU / Government Agency Respresentative", "Industry Practitioners","Administrative Employee", "Faculty", "Other"]
+        if value not in valid_res_category:
+            raise ValueError("Category of respondent must be in one of the choices.")
+        elif value.strip() == "":
+            raise ValueError("Category of respondent must not be empty.")
+        return value
+    
+    @field_validator("comments_suggestions", "comments_suggestions_for_employee")
+    def validate_comments_suggestions(cls, value):
+        if len(value) > 200:
+            raise ValueError("Comments and suggestions cannot exceed 200 characters.")
+        return value
+    
+    @field_validator("attending_employee")
+    def validate_attending_employee(cls, value):
+        if len(value) > 60:
+            raise ValueError("Attending Employee name cannot exceed 60 characters.")
+        elif value == "":
+            raise ValueError("Attending Employee name cannot be empty")
+        return value 
+    
+    @field_validator("cc1")
+    def validate_cc1(cls, value):
+        valid_cc1_ans = ["I know what a CC is and I saw this office's CC", "I know what a CC is but I did not see this office's CC", "I learned of the CC only when I saw this office's CC", "I do not know what a CC is and did not see one in this office" ]
+        if value not in valid_cc1_ans:
+            raise ValueError ("Answer must be in one of the choices.")
+        elif value.strip() == "":
+            raise ValueError("This field cannot be empty.")
+        return value
+    
+    @field_validator("cc2")
+    def validate_cc2(cls, value):
+        valid_cc2_ans = ["Easy to see", "Somewhat easy to see","Difficult to see", "Not visible at all", "N/A"]
+        if value not in valid_cc2_ans:
+            raise ValueError ("Answer must be in one of the choices.")
+        elif value.strip() == "":
+            raise ValueError("This field cannot be empty.")
+        return value
+    
+    @field_validator("cc3")
+    def validate_cc3(cls, value):
+        valid_cc3_ans = ["Helped very much", "Somewhat helped","Did not help","N/A"]
+        if value not in valid_cc3_ans:
+            raise ValueError ("Answer must be in one of the choices.")
+        elif value.strip() == "":
+            raise ValueError("This field cannot be empty.")
+        return value
+    
+            
+        
 
 CSV_HEADERS = [
     "service_id",

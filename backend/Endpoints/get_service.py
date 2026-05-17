@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import APIRouter, FastAPI, HTTPException
+from fastapi import APIRouter, HTTPException
 import csv
 
 router = APIRouter()
@@ -9,10 +9,7 @@ DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "Services.csv"
 @router.get("/get_available_services")
 def get_services():
     if not DATA_FILE.exists():
-        raise HTTPException(
-            status_code=500,
-            detail=f"Services data file not found: {DATA_FILE}"
-        )
+        raise HTTPException(status_code=500, detail=f"Services data file not found: {DATA_FILE}")
 
     services = []
     with DATA_FILE.open(newline="", encoding="utf-8") as file:
