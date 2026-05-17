@@ -9,8 +9,8 @@ router = APIRouter()
 
 DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "Survey_response.csv"
 
-@router.post("/service_summary")
-def get_service_summary(
+@router.post("/Service_summary")
+def Service_response_summary(
     verified_user: dict = Depends(verify_admin_access),
     preset_range: str = Query(None, description="Preset date range. Options: 'today', 'last_week', 'last_month', 'current_year', 'last_year'")
 ):
@@ -172,4 +172,85 @@ def get_service_summary(
             "general_comments": comments_general,
             "employee_comments": comments_employee
         }
+    }
+
+@router.post("/Service_raw_responses")
+def Raw_service_responses(
+    verified_user: dict = Depends(verify_admin_access),
+    preset_range: str = Query(None, description="Preset date range. Options: 'today', 'last_week', 'last_month', 'current_year', 'last_year'")
+):
+
+    if not DATA_FILE.exists():
+        raise HTTPException(status_code=500, detail="Survey response data file not found.")
+
+    service_id = verified_user.get("service_id")
+    service_name = verified_user.get("service_name")
+    
+    # DATE PRESET LOGIC
+    
+    sd_obj = None
+    ed_obj = None
+    current_date = datetime.now()
+    
+    if preset_range:
+        preset_range = preset_range.lower().strip()
+        
+        preset_map = {
+            "today": (current_date - timedelta(days=1), current_date),
+            "last_week": (current_date - timedelta(days=7), current_date),
+            "last_month": (current_date - timedelta(days=30), current_date),
+            "current_year": (datetime(current_date.year, 1, 1), current_date),
+            "last_year": (datetime(current_date.year - 1, 1, 1), datetime(current_date.year - 1, 12, 31))
+        }
+        
+        if preset_range in preset_map:
+            sd_obj, ed_obj = preset_map[preset_range]
+        else:
+            raise HTTPException(status_code=400, detail=f"Invalid preset_range option: '{preset_range}'")
+
+    # Load data using Pandas
+    try:
+        df = pd.read_csv(DATA_FILE, dtype=str)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Error reading the survey response data file.")
+        
+    df.columns = df.columns.str.strip().str.lower()
+    
+    # Filter by Service ID
+    if 'service_id' in df.columns:
+        df['service_id'] = df['service_id'].str.strip()
+        df = df[df['service_id'] == service_id]
+    else:
+        df = pd.DataFrame()
+
+    # Date filtering
+    if not df.empty and (sd_obj or ed_obj):
+        if 'date_of_visit' in df.columns:
+            dates = pd.to_datetime(df['date_of_visit'].str.strip(), format="%d/%m/%Y", errors='coerce')
+            
+            mask = pd.Series(True, index=df.index)
+            if sd_obj:
+                mask &= (dates >= sd_obj)
+            if ed_obj:
+                mask &= (dates <= ed_obj)
+                
+            df = df[mask]
+    
+    total_responses = len(df)
+    
+    responses = []
+    for _, row in df.iterrows():
+        response_dict = {
+            col: (str(val).strip() if pd.notna(val) else "") 
+            for col, val in row.items()
+        }
+        responses.append(response_dict)
+
+    return {
+        "status": "success",
+        "service_id": service_id,
+        "service_name": service_name,
+        "total_responses": int(total_responses),
+        "active_filter": preset_range if preset_range else "all",
+        "responses": responses
     }
