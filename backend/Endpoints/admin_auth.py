@@ -27,10 +27,8 @@ def _hash_password(password: str, salt: bytes) -> bytes:
     )
 
 # VALIDATION LOGIC 
-
 def verify_admin_access(credentials: LoginCredentials):
   
-    # Authenticates the ADMIN securely via request body and retrieves their assigned Service_ID.
     if not ADMINS_FILE.exists() or not SERVICES_FILE.exists():
         raise HTTPException(
             status_code=500, 
@@ -40,7 +38,7 @@ def verify_admin_access(credentials: LoginCredentials):
     is_authenticated = False
     authorized_service_id = ""
 
-    # 1. Authenticate ADMIN and get their assigned Service_ID
+    # 1. Admin Authentication
     with ADMINS_FILE.open(mode="r", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         for row in reader:
@@ -54,7 +52,6 @@ def verify_admin_access(credentials: LoginCredentials):
                         stored_hash = bytes.fromhex(hash_hex)
                         login_hash = _hash_password(credentials.password, stored_salt)
                         
-                        # Use standard equality check
                         if stored_hash == login_hash:
                             is_authenticated = True
                             authorized_service_id = row.get("service_id", "").strip()
@@ -69,7 +66,6 @@ def verify_admin_access(credentials: LoginCredentials):
             detail="Invalid username or password."
         )
 
-    # 2. Look up the human-readable service name
     assigned_service_name = "Unknown Service"
     with SERVICES_FILE.open(mode="r", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
@@ -88,7 +84,6 @@ def verify_admin_access(credentials: LoginCredentials):
 
 @router.post("/login")
 def login_admin(verified_user: dict = Depends(verify_admin_access)):
-    # Authenticates an ADMIN and returns their assigned service details.
     return {
         "message": "Login successful.", 
         **verified_user  
