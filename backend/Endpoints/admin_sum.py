@@ -14,8 +14,6 @@ def get_service_summary(
     verified_user: dict = Depends(verify_admin_access),
     preset_range: str = Query(None, description="Preset date range. Options: 'today', 'last_week', 'last_month', 'current_year', 'last_year'")
 ):
- 
-  #  Summarizes survey responses exclusively for the service assigned to the logged-in admin.
 
     if not DATA_FILE.exists():
         raise HTTPException(status_code=500, detail="Survey response data file not found.")
@@ -27,13 +25,11 @@ def get_service_summary(
 
     sd_obj = None
     ed_obj = None
-    
     current_date = datetime.now()
     
     if preset_range:
         preset_range = preset_range.lower().strip()
         
-        # Dictionary mapping.
         preset_map = {
             "today": (current_date - timedelta(days=1), current_date),
             "last_week": (current_date - timedelta(days=7), current_date),
@@ -42,7 +38,6 @@ def get_service_summary(
             "last_year": (datetime(current_date.year - 1, 1, 1), datetime(current_date.year - 1, 12, 31))
         }
         
-        # Instantly fetch the tuple and unpack it into our start and end date variables.
         if preset_range in preset_map:
             sd_obj, ed_obj = preset_map[preset_range]
         else:
@@ -66,17 +61,15 @@ def get_service_summary(
     except Exception:
         raise HTTPException(status_code=500, detail="Error reading the survey response data file.")
         
-    # Clean headers: lowercase and strip whitespace
     df.columns = df.columns.str.strip().str.lower()
     
-    # Security & Performance: Filter strictly by the admin's assigned Service_ID
     if 'service_id' in df.columns:
         df['service_id'] = df['service_id'].str.strip()
         df = df[df['service_id'] == service_id]
     else:
         df = pd.DataFrame() 
 
-    # Date filtering via vectorized boolean masking
+    # Date filtering
     if not df.empty and (sd_obj or ed_obj):
         if 'date_of_visit' in df.columns:
             dates = pd.to_datetime(df['date_of_visit'].str.strip(), format="%d/%m/%Y", errors='coerce')
@@ -91,21 +84,31 @@ def get_service_summary(
             
     total_responses = len(df)
     
-    # Initialize response structures
+    # INITIALIZE RESPONSE STRUCTURES
+
     averages = {}
     demographics = {"gender": {}, "age_bracket": {}, "category_of_respondent": {}}
-    
+
+    valid_cc1 = [
+        "I know what a CC is and I saw this office's CC",
+        "I know what a CC is but I did not see this office's CC", 
+        "I learned of the CC only when I saw this office's CC", 
+        "I do not know what a CC is and did not see one in this office" 
+    ]
+    valid_cc2 = ["Easy to see", "Somewhat easy to see", "Difficult to see", "Not visible at all", "N/A"]
+    valid_cc3 = ["Helped very much", "Somewhat helped", "Did not help", "N/A"]
+
     cc_counts = {
-        "cc1": {"Option A": 0, "Option B": 0, "Option C": 0, "Option D": 0}, 
-        "cc2": {"Option A": 0, "Option B": 0, "Option C": 0, "Option D": 0}, 
-        "cc3": {"Option A": 0, "Option B": 0, "Option C": 0, "Option D": 0}
+        "cc1": {ans: 0 for ans in valid_cc1},
+        "cc2": {ans: 0 for ans in valid_cc2},
+        "cc3": {ans: 0 for ans in valid_cc3}
     }
     
     comments_general = []
     comments_employee = []
     
     if total_responses > 0:
-        # Process Ratings
+        # Process ratings
         for metric, csv_key in rating_fields.items():
             if csv_key in df.columns:
                 s = df[csv_key].str.strip()
@@ -119,22 +122,27 @@ def get_service_summary(
             else:
                 averages[metric] = "N/A"
                 
-        # Process Demographics.
+        # Process demographics
         for demo_key in demographics.keys():
             if demo_key in df.columns:
                 s = df[demo_key].str.strip().replace('', 'Unknown').fillna('Unknown')
                 demographics[demo_key] = s.value_counts().to_dict()
                 
-        # Process Citizen Charter.
-        for cc in cc_counts.keys():
-            if cc in df.columns:
-                s = df[cc].str.strip().str.title()
-                counts = s.value_counts().to_dict()
+        # Process Citizen Charters
+        if "cc1" in df.columns:
+            counts1 = df["cc1"].str.strip().value_counts().to_dict()
+            for ans in valid_cc1:
+                cc_counts["cc1"][ans] = counts1.get(ans, 0)
                 
-                cc_counts[cc]["Option A"] = counts.get("Option A", 0)
-                cc_counts[cc]["Option B"] = counts.get("Option B", 0)
-                cc_counts[cc]["Option C"] = counts.get("Option C", 0)
-                cc_counts[cc]["Option D"] = counts.get("Option D", 0)
+        if "cc2" in df.columns:
+            counts2 = df["cc2"].str.strip().value_counts().to_dict()
+            for ans in valid_cc2:
+                cc_counts["cc2"][ans] = counts2.get(ans, 0)
+                
+        if "cc3" in df.columns:
+            counts3 = df["cc3"].str.strip().value_counts().to_dict()
+            for ans in valid_cc3:
+                cc_counts["cc3"][ans] = counts3.get(ans, 0)
                 
         # Process Feedback
         if "comments_suggestions" in df.columns:
