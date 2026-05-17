@@ -22,7 +22,7 @@ def get_responses_by_service(service_id: str):
                 matching_responses.append(row)
     
     if len(matching_responses) == 0:
-        raise HTTPException(status_code=404, detail=f"No survey responses found for Service ID {service_id}")
+        raise HTTPException(status_code=404, detail=f"No survey responses found yet for Service/Department")
 
     return {
         "status": "success",
