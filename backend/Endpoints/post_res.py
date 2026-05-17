@@ -98,7 +98,7 @@ class SurveyResponse(BaseModel):
     def validate_age_bracket(cls, value):
         valid_age_bracket = [
             "16-Below",
-            "16-20",
+            "17-20",
             "21-25",
             "26 and up"
             ]
@@ -106,7 +106,7 @@ class SurveyResponse(BaseModel):
         if value.strip() == "":
             raise ValueError("Age bracket must not be empty.")
         if value not in valid_age_bracket:
-            raise ValueError("Age bracket must be one of: '16-Below', '16-20', '21-25', '26 and up'.")
+            raise ValueError("Age bracket must be one of: '16-Below', '17-20', '21-25', '26 and up'.")
         return value
     
     @field_validator("gender")
@@ -144,8 +144,8 @@ class SurveyResponse(BaseModel):
     @field_validator("comments_suggestions", "comments_suggestions_for_employee")
     @classmethod
     def validate_comments_suggestions(cls, value):
-        if len(value) > 200:
-            raise ValueError("Comments and suggestions cannot exceed 200 characters.")
+        if len(value) > 150:
+            raise ValueError("Comments and suggestions cannot exceed 150 characters.")
         return value
     
     @field_validator("attending_employee")
