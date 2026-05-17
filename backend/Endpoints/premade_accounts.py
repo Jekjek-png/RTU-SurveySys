@@ -3,7 +3,6 @@ import hashlib
 import csv
 from pathlib import Path
 
-# Dynamically finds the Data folder.
 DATA_DIR = Path(__file__).resolve().parents[2] / "data" 
 ADMINS_FILE = DATA_DIR / "Admins.csv"
 
