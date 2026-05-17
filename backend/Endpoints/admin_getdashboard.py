@@ -9,7 +9,7 @@ router = APIRouter()
 
 DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "Survey_response.csv"
 
-@router.post("/Service_summary")
+@router.post("/service_summary")
 def Service_response_summary(
     verified_user: dict = Depends(verify_admin_access),
     preset_range: str = Query(None, description="Preset date range. Options: 'today', 'last_week', 'last_month', 'current_year', 'last_year'")
@@ -174,7 +174,7 @@ def Service_response_summary(
         }
     }
 
-@router.post("/Service_raw_responses")
+@router.post("/service_raw_responses")
 def Raw_service_responses(
     verified_user: dict = Depends(verify_admin_access),
     preset_range: str = Query(None, description="Preset date range. Options: 'today', 'last_week', 'last_month', 'current_year', 'last_year'")

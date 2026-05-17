@@ -227,7 +227,7 @@ CSV_HEADERS = [
     "comments_suggestions_for_employee",
 ]
 
-@router.post("/Submit_survey_response", response_model=SuccessResponse)
+@router.post("/submit_survey_response", response_model=SuccessResponse)
 def post_response(response: SurveyResponse):
     try:
 
