@@ -102,7 +102,6 @@ class SurveyResponse(BaseModel):
             "21-25",
             "26 and up"
             ]
-        
         if value.strip() == "":
             raise ValueError("Age bracket must not be empty.")
         if value not in valid_age_bracket:
@@ -165,7 +164,7 @@ class SurveyResponse(BaseModel):
             "I know what a CC is but I did not see this office's CC", 
             "I learned of the CC only when I saw this office's CC", 
             "I do not know what a CC is and did not see one in this office" 
-              ]
+            ]
         if value.strip() == "":
             raise ValueError("This field cannot be empty.")
         if value not in valid_cc1_ans:
